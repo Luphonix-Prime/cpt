@@ -137,11 +137,6 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  // Check custom session first
-  if (req.session && req.session.userId) {
-    return next();
-  }
-
   const user = req.user as any;
 
   if (!req.isAuthenticated() || !user?.expires_at) {

@@ -8,7 +8,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
-import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import Cases from "@/pages/cases";
 import ImageForensics from "@/pages/evidence";
@@ -166,12 +165,8 @@ function Router() {
   }
 
   if (!isAuthenticated) {
-    return (
-      <Switch>
-        <Route path="/" component={Login} />
-        <Route component={NotFound} />
-      </Switch>
-    );
+    window.location.href = "/api/login";
+    return null;
   }
 
   return (
@@ -232,9 +227,8 @@ function AppContent() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={async () => {
-                  await fetch("/api/logout", { method: "POST" });
-                  window.location.href = "/";
+                onClick={() => {
+                  window.location.href = "/api/logout";
                 }}
                 data-testid="button-logout"
               >

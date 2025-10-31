@@ -10,55 +10,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // ==================== CUSTOM LOGIN ====================
-
-  app.post('/api/login', async (req: any, res) => {
-    const { username, password } = req.body;
-
-    if (username === 'admin' && password === 'admin') {
-      // Create a simple session
-      req.session.userId = 'admin-user';
-      req.session.user = {
-        id: 'admin-user',
-        email: 'admin@forensics.local',
-        firstName: 'Admin',
-        lastName: 'User',
-        role: 'admin'
-      };
-
-      // Ensure user exists in database
-      await storage.upsertUser({
-        id: 'admin-user',
-        email: 'admin@forensics.local',
-        firstName: 'Admin',
-        lastName: 'User',
-        profileImageUrl: null
-      });
-
-      return res.json({ success: true });
-    }
-
-    return res.status(401).json({ message: 'Invalid credentials' });
-  });
-
-  app.post('/api/logout', (req, res) => {
-    req.session.destroy(() => {
-      res.json({ success: true });
-    });
-  });
-
   // ==================== AUTH ROUTES ====================
 
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      // Handle custom session
-      if (req.session && req.session.userId) {
-        const user = await storage.getUser(req.session.userId);
-        if (user) {
-          return res.json(user);
-        }
-      }
-
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
       
